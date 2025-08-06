@@ -1,0 +1,64 @@
+<div class="header">
+    <h1>{{ title or "מכתב התראה - פיטורין לא חוקיים" }}</h1>
+</div>
+
+<div class="content">
+    <p><strong>תאריך:</strong> {{ current_date }}</p>
+    
+    <p><strong>אל:</strong><br>
+    {{ employer_name }}<br>
+    {{ employer_address }}</p>
+    
+    <p><strong>{{ legal_phrases.subject }}</strong> דרישה לתשלום זכויות עובד</p>
+    
+    <p>{{ legal_phrases.respectfully }},</p>
+    
+    <p>הנני לפנות אליכם בעניין פיטורי מעבודתי בתאריך {{ termination_date }}.</p>
+    
+    {% if termination_reason %}
+    <p>הסיבה שניתנה לפיטורים: {{ termination_reason }}</p>
+    {% endif %}
+    
+    <p>לפי חוק הגנת השכר התשי"ח-1958 וחוק פיצויי פיטורין התשכ"ג-1963, מגיעים לי הזכויות הבאות:</p>
+    
+    <ul>
+        {% if notice_period_days %}
+        <li>הודעה מוקדמת: {{ notice_period_days }} ימים או תשלום במקום הודעה</li>
+        {% endif %}
+        
+        {% if severance_pay %}
+        <li>פיצויי פיטורין: {{ severance_pay }} ש"ח</li>
+        {% endif %}
+        
+        {% if unused_vacation_days %}
+        <li>ימי חופשה שלא נוצלו: {{ unused_vacation_days }} ימים</li>
+        {% endif %}
+        
+        {% if overtime_hours %}
+        <li>שעות נוספות: {{ overtime_hours }} שעות</li>
+        {% endif %}
+        
+        <li>תלוש שכר סופי</li>
+        <li>אישור עבודה</li>
+    </ul>
+    
+    {% if total_amount %}
+    <p><strong>סה"כ סכום לתשלום: {{ total_amount }} ש"ח</strong></p>
+    {% endif %}
+    
+    <p>אני דורש כי תשלמו את הסכומים הנ"ל תוך {{ payment_deadline or "14" }} ימים מיום קבלת מכתב זה.</p>
+    
+    {% if legal_action_warning %}
+    <p><strong>אזהרה:</strong> במידה ולא תשלמו את הסכומים הנ"ל במועד, אאלץ לפנות לבית הדין לעבודה להגשת תביעה, וזאת על חשבונכם.</p>
+    {% endif %}
+    
+    <p>אני מבקש לקבל תגובה בכתב תוך 7 ימים.</p>
+    
+    <p>{{ legal_phrases.respectfully }},</p>
+    
+    <br>
+    <p><strong>{{ employee_name }}</strong><br>
+    {{ employee_id and "ת.ז: " + employee_id or "" }}<br>
+    {{ employee_phone and "טלפון: " + employee_phone or "" }}<br>
+    {{ employee_email and "אימייל: " + employee_email or "" }}</p>
+</div>

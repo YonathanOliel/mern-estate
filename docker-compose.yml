@@ -1,0 +1,239 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: legalgpt_postgres
+    environment:
+      POSTGRES_DB: legalgpt
+      POSTGRES_USER: legalgpt_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-legalgpt_secure_password}
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U legalgpt_user -d legalgpt"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+  # Redis Cache & Session Store
+  redis:
+    image: redis:7-alpine
+    container_name: legalgpt_redis
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-legalgpt_redis_password}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+  # Elasticsearch for Vector Search (RAG)
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: legalgpt_elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+  # Main API Gateway
+  api_gateway:
+    build:
+      context: ./services/api-gateway
+      dockerfile: Dockerfile
+    container_name: legalgpt_api_gateway
+    environment:
+      - NODE_ENV=production
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=${JWT_SECRET:-your-super-secret-jwt-key}
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+      - postgres
+    restart: unless-stopped
+
+  # Core Legal AI Service
+  legal_ai_service:
+    build:
+      context: ./services/legal-ai
+      dockerfile: Dockerfile
+    container_name: legalgpt_legal_ai
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - POSTGRES_URL=postgresql://legalgpt_user:${POSTGRES_PASSWORD:-legalgpt_secure_password}@postgres:5432/legalgpt
+      - REDIS_URL=redis://redis:6379
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    depends_on:
+      - postgres
+      - redis
+      - elasticsearch
+    restart: unless-stopped
+    deploy:
+      replicas: 2
+
+  # Document Generation Service
+  document_service:
+    build:
+      context: ./services/document-generator
+      dockerfile: Dockerfile
+    container_name: legalgpt_document_service
+    environment:
+      - POSTGRES_URL=postgresql://legalgpt_user:${POSTGRES_PASSWORD:-legalgpt_secure_password}@postgres:5432/legalgpt
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    volumes:
+      - document_storage:/app/storage
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  # User Management Service
+  user_service:
+    build:
+      context: ./services/user-management
+      dockerfile: Dockerfile
+    container_name: legalgpt_user_service
+    environment:
+      - POSTGRES_URL=postgresql://legalgpt_user:${POSTGRES_PASSWORD:-legalgpt_secure_password}@postgres:5432/legalgpt
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=${JWT_SECRET:-your-super-secret-jwt-key}
+      - SENDGRID_API_KEY=${SENDGRID_API_KEY}
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  # Payment Service
+  payment_service:
+    build:
+      context: ./services/payment
+      dockerfile: Dockerfile
+    container_name: legalgpt_payment_service
+    environment:
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - POSTGRES_URL=postgresql://legalgpt_user:${POSTGRES_PASSWORD:-legalgpt_secure_password}@postgres:5432/legalgpt
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  # Analytics & Logging Service
+  analytics_service:
+    build:
+      context: ./services/analytics
+      dockerfile: Dockerfile
+    container_name: legalgpt_analytics
+    environment:
+      - POSTGRES_URL=postgresql://legalgpt_user:${POSTGRES_PASSWORD:-legalgpt_secure_password}@postgres:5432/legalgpt
+      - REDIS_URL=redis://redis:6379
+      - MIXPANEL_TOKEN=${MIXPANEL_TOKEN}
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  # Next.js Frontend
+  frontend:
+    build:
+      context: ./frontend-next
+      dockerfile: Dockerfile
+      target: production
+    container_name: legalgpt_frontend
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://api_gateway:8000
+      - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api_gateway
+    restart: unless-stopped
+
+  # Nginx Load Balancer & Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: legalgpt_nginx
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - frontend
+      - api_gateway
+    restart: unless-stopped
+
+  # Prometheus for Monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: legalgpt_prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+
+  # Grafana for Dashboards
+  grafana:
+    image: grafana/grafana:latest
+    container_name: legalgpt_grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    ports:
+      - "3001:3000"
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+  # Jaeger for Distributed Tracing
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: legalgpt_jaeger
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    ports:
+      - "16686:16686"
+      - "14268:14268"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+  elasticsearch_data:
+  document_storage:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  default:
+    name: legalgpt_network

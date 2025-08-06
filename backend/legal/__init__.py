@@ -1,0 +1,1 @@
+# Legal Module for LegalGPT - Legal Logic and Categories

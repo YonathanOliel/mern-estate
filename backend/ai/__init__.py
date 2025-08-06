@@ -1,0 +1,1 @@
+# AI Module for LegalGPT - Hebrew Legal AI Processing

@@ -1,0 +1,68 @@
+{
+  "name": "מכתב התראה - פיטורין",
+  "description": "מכתב דרישה לתשלום זכויות עובד לאחר פיטורין",
+  "category": "employment",
+  "required_fields": [
+    "employee_name",
+    "employer_name", 
+    "termination_date"
+  ],
+  "optional_fields": [
+    "title",
+    "employer_address",
+    "termination_reason",
+    "employee_id",
+    "employee_phone",
+    "employee_email",
+    "notice_period_days",
+    "severance_pay",
+    "unused_vacation_days",
+    "overtime_hours",
+    "total_amount",
+    "payment_deadline",
+    "legal_action_warning"
+  ],
+  "field_descriptions": {
+    "employee_name": "שם העובד המפוטר",
+    "employer_name": "שם המעסיק/החברה",
+    "employer_address": "כתובת המעסיק",
+    "termination_date": "תאריך הפיטורין",
+    "termination_reason": "הסיבה שניתנה לפיטורין",
+    "employee_id": "מספר תעודת זהות של העובד",
+    "employee_phone": "מספר טלפון של העובד",
+    "employee_email": "כתובת אימייל של העובד",
+    "notice_period_days": "מספר ימי הודעה מוקדמת",
+    "severance_pay": "סכום פיצויי הפיטורין בש\"ח",
+    "unused_vacation_days": "מספר ימי חופשה שלא נוצלו",
+    "overtime_hours": "מספר שעות נוספות",
+    "total_amount": "סה\"כ הסכום הנדרש בש\"ח",
+    "payment_deadline": "מספר ימים למועד התשלום (ברירת מחדל: 14)",
+    "legal_action_warning": "האם לכלול אזהרה על פעולה משפטית (true/false)"
+  },
+  "examples": {
+    "basic": {
+      "employee_name": "יוסי כהן",
+      "employer_name": "חברת הטכנולוגיה בע\"מ",
+      "employer_address": "רחוב הרצל 123, תל אביב",
+      "termination_date": "15/01/2024",
+      "total_amount": "25000"
+    },
+    "detailed": {
+      "employee_name": "שרה לוי",
+      "employer_name": "משרד עורכי דין כהן ושות'",
+      "employer_address": "שדרות רוטשילד 45, תל אביב",
+      "termination_date": "01/02/2024",
+      "termination_reason": "צמצום כוח אדם",
+      "employee_id": "123456789",
+      "employee_phone": "050-1234567",
+      "employee_email": "sarah.levi@email.com",
+      "notice_period_days": "30",
+      "severance_pay": "18000",
+      "unused_vacation_days": "10",
+      "overtime_hours": "25",
+      "total_amount": "22000",
+      "payment_deadline": "21",
+      "legal_action_warning": true
+    }
+  }
+}
