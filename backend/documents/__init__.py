@@ -1,0 +1,1 @@
+# Documents Module for LegalGPT - Document Generation and Management

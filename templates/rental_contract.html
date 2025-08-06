@@ -1,0 +1,121 @@
+<div class="header">
+    <h1>{{ title or "חוזה שכירות דירת מגורים" }}</h1>
+</div>
+
+<div class="content">
+    <p><strong>תאריך:</strong> {{ current_date }}</p>
+    
+    <p><strong>הסכם שכירות זה נחתם ביום {{ current_date }} בין:</strong></p>
+    
+    <p><strong>המשכיר:</strong><br>
+    {{ landlord_name }}<br>
+    ת.ז: {{ landlord_id }}<br>
+    {{ landlord_address }}<br>
+    טלפון: {{ landlord_phone }}</p>
+    
+    <p><strong>השוכר:</strong><br>
+    {{ tenant_name }}<br>
+    ת.ז: {{ tenant_id }}<br>
+    {{ tenant_address }}<br>
+    טלפון: {{ tenant_phone }}</p>
+    
+    <h2>פרטי הנכס המושכר:</h2>
+    <ul>
+        <li><strong>כתובת:</strong> {{ property_address }}</li>
+        <li><strong>מספר חדרים:</strong> {{ rooms_number }}</li>
+        {% if property_size %}
+        <li><strong>שטח:</strong> {{ property_size }} מ"ר</li>
+        {% endif %}
+        {% if floor %}
+        <li><strong>קומה:</strong> {{ floor }}</li>
+        {% endif %}
+        {% if parking %}
+        <li><strong>חניה:</strong> {{ parking }}</li>
+        {% endif %}
+    </ul>
+    
+    <h2>תנאי השכירות:</h2>
+    
+    <p><strong>1. תקופת השכירות:</strong><br>
+    מתאריך {{ lease_start_date }} עד תאריך {{ lease_end_date }}<br>
+    (תקופה של {{ lease_duration }} חודשים)</p>
+    
+    <p><strong>2. דמי השכירות:</strong><br>
+    {{ monthly_rent }} ש"ח לחודש, לתשלום עד ה-{{ rent_payment_day or "1" }} בכל חודש.</p>
+    
+    {% if deposit_amount %}
+    <p><strong>3. פיקדון:</strong><br>
+    השוכר ישלם פיקדון בסך {{ deposit_amount }} ש"ח ({{ deposit_months or "3" }} דמי שכירות), 
+    אשר יוחזר בתום תקופת השכירות בכפוף לתנאי ההסכם.</p>
+    {% endif %}
+    
+    <p><strong>4. תשלומים נוספים:</strong></p>
+    <ul>
+        {% if utilities_included %}
+        <li>חשמל, מים, גז - כלולים בשכירות</li>
+        {% else %}
+        <li>חשמל, מים, גז - על חשבון השוכר</li>
+        {% endif %}
+        
+        {% if property_tax_included %}
+        <li>ארנונה - על חשבון המשכיר</li>
+        {% else %}
+        <li>ארנונה - על חשבון השוכר</li>
+        {% endif %}
+        
+        {% if building_committee_included %}
+        <li>ועד בית - על חשבון המשכיר</li>
+        {% else %}
+        <li>ועד בית - על חשבון השוכר</li>
+        {% endif %}
+    </ul>
+    
+    <p><strong>5. התחייבויות השוכר:</strong></p>
+    <ul>
+        <li>לשמור על הנכס במצב תקין ולהשיבו במצבו המקורי</li>
+        <li>לא לבצע שינויים במבנה הנכס ללא אישור בכתב מהמשכיר</li>
+        <li>לשלם את דמי השכירות במועד</li>
+        <li>לאפשר למשכיר ביקורים סבירים בתיאום מראש</li>
+        {% if no_pets %}
+        <li>לא להחזיק חיות מחמד בנכס</li>
+        {% endif %}
+        {% if no_smoking %}
+        <li>איסור עישון בנכס</li>
+        {% endif %}
+    </ul>
+    
+    <p><strong>6. התחייבויות המשכיר:</strong></p>
+    <ul>
+        <li>למסור את הנכס במצב תקין וראוי למגורים</li>
+        <li>לבצע תיקונים הנובעים מבלאי רגיל</li>
+        <li>לאפשר שימוש רגיל ושקט בנכס</li>
+    </ul>
+    
+    {% if early_termination_clause %}
+    <p><strong>7. סיום מוקדם:</strong><br>
+    {{ early_termination_clause }}</p>
+    {% endif %}
+    
+    {% if special_conditions %}
+    <p><strong>8. תנאים מיוחדים:</strong><br>
+    {{ special_conditions }}</p>
+    {% endif %}
+    
+    <p><strong>9. הסכם זה כפוף לחוק הגנת הדייר התש"ל-1972 ולדיני ישראל.</strong></p>
+    
+    <br><br>
+    
+    <div style="display: flex; justify-content: space-between;">
+        <div>
+            <p>חתימת המשכיר: ________________<br>
+            {{ landlord_name }}<br>
+            תאריך: {{ current_date }}</p>
+        </div>
+        
+        <div>
+            <p>חתימת השוכר: ________________<br>
+            {{ tenant_name }}<br>
+            תאריך: {{ current_date }}</p>
+        </div>
+    </div>
+</div>

@@ -1,8 +1,94 @@
-# React + Vite
+# LegalGPT - עורך הדין האישי שלך 🏛️⚖️
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+אפליקציית סטארטאפ חדשנית המנגישה שירותים משפטיים לקהל הרחב באמצעות בינה מלאכותית.
 
-Currently, two official plugins are available:
+## 🎯 מטרת הפרויקט
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+LegalGPT מאפשרת למשתמשים לתאר מצבים משפטיים מורכבים במילים פשוטות ולקבל:
+- מסמכים משפטיים תקפים (PDF/Word)
+- הסברים בשפה פשוטה
+- תהליך מותאם אישית שלב-אחר-שלב
+
+## ✨ פיצ'רים עיקריים
+
+### MVP (גרסה ראשונה)
+- 💬 **צ'אט AI חכם** - מבוסס GPT עם הבנה מלאה של עברית
+- 📋 **תהליך דינאמי** - שאלות ותשובות המייצרות מסמכים משפטיים
+- 🗂️ **קטגוריות מוכנות** - חוזה שכירות, פיטורין, תביעות קטנות, צוואה
+- 🎨 **בחירת סגנון** - ניסוח משפטי מקצועי או שפה פשוטה
+- 📄 **ייצוא מסמכים** - PDF ו-Word
+
+### פיצ'רים מתקדמים
+- 📚 **היסטוריית מסמכים** - ניהול מלא של מסמכים קודמים
+- ✍️ **חתימה דיגיטלית** - אימות וחתימה על מסמכים
+- 🧭 **המלצות המשך** - הפניה לעורכי דין או הגשת תביעות
+- ⚖️ **מערכת זכויות** - זיהוי מה מגיע למשתמש
+
+## 🏗️ ארכיטקטורה
+
+```
+LegalGPT/
+├── backend/                 # שרת Python (FastAPI)
+│   ├── api/                # נתיבי API
+│   ├── ai/                 # מודולי בינה מלאכותית
+│   ├── legal/              # לוגיקה משפטית
+│   ├── documents/          # יצירת מסמכים
+│   └── database/           # מודלי נתונים
+├── frontend/               # ממשק משתמש (React)
+│   ├── components/         # רכיבי UI
+│   ├── pages/              # דפי האפליקציה
+│   ├── services/           # שירותי API
+│   └── assets/             # משאבים סטטיים
+├── templates/              # תבניות מסמכים משפטיים
+└── docs/                   # תיעוד
+```
+
+## 🚀 התחלה מהירה
+
+### דרישות מוקדמות
+- Python 3.9+
+- Node.js 16+
+- OpenAI API Key
+
+### התקנה והפעלה אוטומטית
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/legalgpt
+cd legalgpt
+
+# הפעלה אוטומטית של כל המערכת
+./start.sh
+```
+
+### גישה למערכת
+- **אפליקציה:** http://localhost:3000
+- **API Backend:** http://localhost:8000  
+- **תיעוד API:** http://localhost:8000/docs
+
+📖 **למדריך מפורט:** ראה [SETUP.md](SETUP.md)
+
+## 🌐 תמיכה בשפות
+- ✅ עברית מלאה (כולל סלנג)
+- 🔄 אנגלית (בפיתוח)
+- 🔄 ערבית (מתוכנן)
+
+## 📋 תחומי משפט נתמכים
+- 💼 דיני עבודה
+- 🏠 נדל"ן
+- 👨‍👩‍👧‍👦 משפחה
+- 🛒 צרכנות
+- ⚖️ תביעות קטנות
+- 📄 חוזים כלליים
+
+## 🤝 תרומה לפרויקט
+אנו מזמינים תרומות! אנא קראו את המדריך ב-`CONTRIBUTING.md`
+
+## 📄 רישיון
+MIT License - ראו `LICENSE` לפרטים
+
+## 📞 יצירת קשר
+- Email: support@legalgpt.co.il
+- Website: https://legalgpt.co.il
+
+---
+**⚠️ הערה משפטית**: LegalGPT מספקת מידע כללי ואינה מהווה ייעוץ משפטי. במקרים מורכבים, מומלץ להתייעץ עם עורך דין מוסמך.

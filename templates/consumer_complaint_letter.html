@@ -1,0 +1,79 @@
+<div class="header">
+    <h1>{{ title or "מכתב תלונה - זכויות הצרכן" }}</h1>
+</div>
+
+<div class="content">
+    <p><strong>תאריך:</strong> {{ current_date }}</p>
+    
+    <p><strong>אל:</strong><br>
+    {{ company_name }}<br>
+    {{ company_address }}</p>
+    
+    <p><strong>{{ legal_phrases.subject }}</strong> תלונה על מוצר/שירות לקוי</p>
+    
+    <p>{{ legal_phrases.respectfully }},</p>
+    
+    <p>אני פונה אליכם בעניין {{ product_or_service }} שרכשתי מכם בתאריך {{ purchase_date }}.</p>
+    
+    {% if receipt_number %}
+    <p><strong>מספר קבלה/הזמנה:</strong> {{ receipt_number }}</p>
+    {% endif %}
+    
+    {% if purchase_amount %}
+    <p><strong>סכום הרכישה:</strong> {{ purchase_amount }} ש"ח</p>
+    {% endif %}
+    
+    <p><strong>תיאור הבעיה:</strong></p>
+    <p>{{ problem_description }}</p>
+    
+    {% if previous_contact %}
+    <p><strong>פניות קודמות:</strong></p>
+    <p>{{ previous_contact }}</p>
+    {% endif %}
+    
+    <p>על פי חוק הגנת הצרכן התשמ"א-1981, מגיעים לי הזכויות הבאות:</p>
+    
+    <ul>
+        {% if remedy_requested == "replacement" %}
+        <li>החלפת המוצר במוצר תקין ומקביל</li>
+        {% elif remedy_requested == "refund" %}
+        <li>החזרת מלא הכסף ששילמתי</li>
+        {% elif remedy_requested == "repair" %}
+        <li>תיקון המוצר ללא תשלום</li>
+        {% else %}
+        <li>פתרון הולם לבעיה</li>
+        {% endif %}
+        
+        {% if compensation_requested %}
+        <li>פיצוי על הנזק שנגרם לי בסך {{ compensation_requested }} ש"ח</li>
+        {% endif %}
+        
+        <li>החזרת הוצאות משלוח (במידה ונגרמו)</li>
+    </ul>
+    
+    <p>אני דורש כי תטפלו בבעיה תוך {{ response_deadline or "14" }} ימים מיום קבלת מכתב זה.</p>
+    
+    {% if legal_action_warning %}
+    <p><strong>אזהרה:</strong> במידה ולא תפתרו את הבעיה במועד, אאלץ לפנות למוקד הצרכנות של משרד הכלכלה ו/או לבית המשפט לתביעה קטנה, וזאת על חשבונכם.</p>
+    {% endif %}
+    
+    {% if attachments %}
+    <p><strong>מסמכים מצורפים:</strong></p>
+    <ul>
+        {% for attachment in attachments %}
+        <li>{{ attachment }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    
+    <p>אני מבקש לקבל תגובה בכתב תוך 7 ימים.</p>
+    
+    <p>{{ legal_phrases.respectfully }},</p>
+    
+    <br>
+    <p><strong>{{ customer_name }}</strong><br>
+    {{ customer_id and "ת.ז: " + customer_id or "" }}<br>
+    {{ customer_address and "כתובת: " + customer_address or "" }}<br>
+    {{ customer_phone and "טלפון: " + customer_phone or "" }}<br>
+    {{ customer_email and "אימייל: " + customer_email or "" }}</p>
+</div>
