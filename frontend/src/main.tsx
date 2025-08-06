@@ -4,6 +4,10 @@ import { BrowserRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
+import { prefixer } from 'stylis'
+import rtlPlugin from 'stylis-plugin-rtl'
+import { CacheProvider } from '@emotion/react'
+import createCache from '@emotion/cache'
 import { Toaster } from 'react-hot-toast'
 import App from './App'
 import './index.css'
@@ -16,6 +20,12 @@ const queryClient = new QueryClient({
       retry: 1,
     },
   },
+})
+
+// Create RTL cache
+const cacheRtl = createCache({
+  key: 'muirtl',
+  stylisPlugins: [prefixer, rtlPlugin],
 })
 
 // Create Material-UI theme with RTL support for Hebrew
@@ -61,24 +71,26 @@ const theme = createTheme({
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <App />
-          <Toaster
-            position="top-center"
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: '#363636',
-                color: '#fff',
-                direction: 'rtl',
-              },
-            }}
-          />
-        </ThemeProvider>
-      </QueryClientProvider>
-    </BrowserRouter>
+    <CacheProvider value={cacheRtl}>
+      <BrowserRouter>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <App />
+            <Toaster
+              position="top-center"
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: '#363636',
+                  color: '#fff',
+                  direction: 'rtl',
+                },
+              }}
+            />
+          </ThemeProvider>
+        </QueryClientProvider>
+      </BrowserRouter>
+    </CacheProvider>
   </React.StrictMode>,
 )

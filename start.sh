@@ -38,7 +38,12 @@ fi
 echo -e "${YELLOW}📦 מתקין תלויות Python...${NC}"
 cd backend
 source venv/bin/activate
-pip install -r requirements.txt
+pip install --upgrade pip
+if ! pip install -r requirements.txt; then
+    echo -e "${RED}❌ שגיאה בהתקנת תלויות Python${NC}"
+    echo -e "${YELLOW}💡 נסה להריץ: pip install --upgrade pip setuptools wheel${NC}"
+    exit 1
+fi
 
 # Create .env file if it doesn't exist
 if [ ! -f ".env" ]; then
@@ -60,7 +65,11 @@ echo -e "${BLUE}⚛️  מתחיל את הפרונטאנד (React)...${NC}"
 if [ ! -d "frontend/node_modules" ]; then
     echo -e "${YELLOW}📦 מתקין תלויות Node.js...${NC}"
     cd frontend
-    npm install
+    if ! npm install; then
+        echo -e "${RED}❌ שגיאה בהתקנת תלויות Node.js${NC}"
+        echo -e "${YELLOW}💡 נסה להריץ: npm cache clean --force${NC}"
+        exit 1
+    fi
     cd ..
 fi
 

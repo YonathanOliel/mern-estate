@@ -1,9 +1,15 @@
 import re
 import logging
 from typing import List, Dict, Optional, Tuple
-from hebrew_tokenizer import tokenize
 
 logger = logging.getLogger(__name__)
+
+# Simple Hebrew tokenizer fallback
+def simple_hebrew_tokenize(text: str) -> List[str]:
+    """Simple Hebrew tokenizer as fallback"""
+    # Basic word splitting for Hebrew
+    words = re.findall(r'[\u0590-\u05FF]+|[a-zA-Z]+|\d+', text)
+    return words
 
 class HebrewProcessor:
     """
@@ -249,8 +255,9 @@ class HebrewProcessor:
     def tokenize_hebrew(self, text: str) -> List[str]:
         """פיצול טקסט עברי לטוקנים"""
         try:
-            tokens = tokenize(text)
-            return [token[0] for token in tokens if token[0].strip()]
+            # Use our simple tokenizer
+            tokens = simple_hebrew_tokenize(text)
+            return [token for token in tokens if token.strip()]
         except Exception as e:
             logger.error(f"Error tokenizing Hebrew text: {str(e)}")
             # Fallback to simple word splitting
