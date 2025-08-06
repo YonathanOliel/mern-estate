@@ -1,0 +1,134 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'legalgpt-production'
+    replica: 'prometheus-01'
+
+rule_files:
+  - "rules/*.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # API Gateway monitoring
+  - job_name: 'api-gateway'
+    static_configs:
+      - targets: ['api_gateway:8000']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+
+  # Legal AI Service
+  - job_name: 'legal-ai-service'
+    static_configs:
+      - targets: ['legal_ai_service:8001']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  # Document Service
+  - job_name: 'document-service'
+    static_configs:
+      - targets: ['document_service:8002']
+    metrics_path: '/metrics'
+
+  # User Management Service
+  - job_name: 'user-service'
+    static_configs:
+      - targets: ['user_service:8003']
+    metrics_path: '/metrics'
+
+  # Payment Service
+  - job_name: 'payment-service'
+    static_configs:
+      - targets: ['payment_service:8004']
+    metrics_path: '/metrics'
+
+  # Analytics Service
+  - job_name: 'analytics-service'
+    static_configs:
+      - targets: ['analytics_service:8005']
+    metrics_path: '/metrics'
+
+  # PostgreSQL monitoring
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:5432']
+    metrics_path: '/metrics'
+
+  # Redis monitoring
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    metrics_path: '/metrics'
+
+  # Elasticsearch monitoring
+  - job_name: 'elasticsearch'
+    static_configs:
+      - targets: ['elasticsearch:9200']
+    metrics_path: '/_prometheus/metrics'
+
+  # Node Exporter for system metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+  # Nginx metrics
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx:9113']
+
+  # Blackbox exporter for endpoint monitoring
+  - job_name: 'blackbox'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+        - https://legalgpt.co.il/health
+        - https://legalgpt.co.il/api/v2/health
+        - https://legalgpt-staging.azurewebsites.net/health
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+
+  # Custom application metrics
+  - job_name: 'legalgpt-custom-metrics'
+    static_configs:
+      - targets: ['api_gateway:8000']
+    metrics_path: '/api/v2/metrics'
+    scrape_interval: 30s
+    basic_auth:
+      username: 'metrics'
+      password_file: '/etc/prometheus/metrics_password'
+
+# Remote write configuration for long-term storage
+remote_write:
+  - url: "https://prometheus-prod-10-prod-us-central-0.grafana.net/api/prom/push"
+    basic_auth:
+      username: "prometheus_user"
+      password_file: "/etc/prometheus/grafana_cloud_password"
+    write_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'legalgpt_.*'
+        action: keep
+
+# Storage configuration
+storage:
+  tsdb:
+    retention.time: 30d
+    retention.size: 50GB
+    wal-compression: true
